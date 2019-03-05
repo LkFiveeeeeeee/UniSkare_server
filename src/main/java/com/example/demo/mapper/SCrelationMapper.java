@@ -13,6 +13,9 @@ public interface SCrelationMapper {
     @Select({"SELECT commentId FROM SCrelation WHERE skillId=#{skillId}"})
     int[] findCommentUers(@Param("skillId") int skillId);
 
+    @Select({"SELECT skillId FROM SCrelation WHERE commentId=#{commentId}"})
+    int findSkillId(@Param("commentId") int commentId);
+
 
     @Select({"SELECT EXISTS(SELECT * FROM SCrelation WHERE" +
             "commentId=#{commentId} and skillId=#{skillId}"})

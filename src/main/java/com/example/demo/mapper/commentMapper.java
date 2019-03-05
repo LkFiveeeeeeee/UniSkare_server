@@ -16,6 +16,9 @@ public interface commentMapper {
             "and comment.commentId = screlation.commentId" })
     List<Comment> selectCommentInfo(@Param("skillId") int skillId);
 
+    @Select({"SELECT * FROM comment WHERE commentId=#{commentId}"})
+    Comment selectCommentByCommentId(@Param("commentId") int commentId);
+
     @Delete({"DELETE FROM comment WHERE commentId=#{commentId}"})
     int deleteComment(@Param("commentId") int commentId);
 }

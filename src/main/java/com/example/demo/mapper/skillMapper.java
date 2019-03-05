@@ -20,7 +20,10 @@ public interface skillMapper {
     void updateSkillScore(@Param("score") double score,@Param("skillId") int skillId);
 
     @Update({"Update skill SET commentNum=commentNum+1 WHERE skillId=#{skillId}"})
-    void updateSkillCommentNum(@Param("skillId") int skillId);
+    void plusSkillCommentNum(@Param("skillId") int skillId);
+
+    @Update({"Update skill SET commentNum=commentNum-1 WHERE skillId=#{skillId}"})
+    void minusSkillCommentNum(@Param("skillId") int skillId);
 
     @Select({"SELECT * FROM skill WHERE type = #{type} ORDER BY date DESC"})
     List<Skill> selectSkillByType(@Param("type") String type);

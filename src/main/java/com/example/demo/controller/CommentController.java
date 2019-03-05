@@ -18,9 +18,9 @@ public class CommentController {
     @Autowired
     private commentService commentService;
 
-    @RequestMapping(value = "/insert/{skillId}", method = RequestMethod.POST)
-    public BaseResponse insertComment(@ModelAttribute Comment comment, @PathVariable("skillId") int skillId){
-        String result = commentService.insertComment(comment,skillId);
+    @RequestMapping(value = "/insert", method = RequestMethod.POST)
+    public BaseResponse insertComment(@ModelAttribute Comment comment){
+        String result = commentService.insertComment(comment);
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
                 Code.OK,
                 Code.NO_ERROR_MESSAGE,
@@ -52,7 +52,7 @@ public class CommentController {
         return baseResponse;
     }
 
-    @RequestMapping(value = "/delete/{commentId}",method = RequestMethod.POST)
+    @RequestMapping(value = "/delete/{commentId}",method = RequestMethod.DELETE)
     public BaseResponse deleteComment(@PathVariable("commentId") int commentId){
         String result = commentService.deleteComment(commentId);
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),

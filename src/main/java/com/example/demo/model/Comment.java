@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 @Data
 public class Comment {
     private int commentId;
+    private int skillId;
     private int userId;
     private int score;
     private String content;

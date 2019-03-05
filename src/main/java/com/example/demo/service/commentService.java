@@ -20,15 +20,15 @@ public class commentService {
     @Autowired
     private skillMapper skillMapper;
 
-    public String insertComment(Comment comment,int skillId){
+    public String insertComment(Comment comment){
         commentMapper.insertComment(comment);
         int keyId = comment.getCommentId();
-        sCrelationMapper.insertSCrelation(keyId,skillId);
-        Skill skill = skillMapper.selectSkillBySkillId(skillId);
-        skillMapper.updateSkillCommentNum(skillId);
+        sCrelationMapper.insertSCrelation(keyId,comment.getSkillId());
+        Skill skill = skillMapper.selectSkillBySkillId(comment.getSkillId());
+        skillMapper.plusSkillCommentNum(comment.getSkillId());
         double score = (skill.getScore() * skill.getCommentNum() + comment.getScore())
                 /(skill.getCommentNum() + 1);
-        skillMapper.updateSkillScore(score,skillId);
+        skillMapper.updateSkillScore(score,comment.getSkillId());
         return ConstValue.INSERT_SUCCESS;
     }
 
@@ -37,6 +37,14 @@ public class commentService {
     }
 
     public String deleteComment(int commentId){
+        int skillId = sCrelationMapper.findSkillId(commentId);
+        Skill skill = skillMapper.selectSkillBySkillId(skillId);
+        Comment comment = commentMapper.selectCommentByCommentId(commentId);
+        double score = skill.getScore() * skill.getCommentNum() - comment.getScore();
+        score = score/(skill.getCommentNum() - 1);
+        skillMapper.minusSkillCommentNum(skillId);
+        skillMapper.updateSkillScore(score,skillId);
+        sCrelationMapper.deleteSCrelation(commentId,skillId);
         if(commentMapper.deleteComment(commentId) != 0){
             return ConstValue.DELETE_SUCCESS;
         }else{
