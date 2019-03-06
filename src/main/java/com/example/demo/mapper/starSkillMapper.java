@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Select;
 
 public interface starSkillMapper {
     @Insert({"INSERT INTO starSkill VALUE(#{skillId},#{starId});"})
-    void insertSCrelation(@Param("skillId") int skillId,
+    int insertSCrelation(@Param("skillId") int skillId,
                           @Param("starId") int starId);
 
     @Select({"SELECT skillId FROM starSkill WHERE starId=#{starId}"})
@@ -20,6 +20,6 @@ public interface starSkillMapper {
                                 @Param("skillId") int skillId);
 
     @Delete({"DELETE FROM starSkill WHERE starId=#{starId} and skillId=#{skillId}"})
-    void deleteStarRelation(@Param("starId") int starId,
+    int deleteStarRelation(@Param("starId") int starId,
                             @Param("skillId") int skillId);
 }

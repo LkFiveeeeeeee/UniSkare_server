@@ -189,4 +189,82 @@ public class UserController {
         }
         return baseResponse;
     }
+
+    @RequestMapping(value = "/{userId}/follow/{followId}",method = RequestMethod.POST)
+    public BaseResponse followSomeone(@PathVariable("userId") int userId,@PathVariable("followId") int followId){
+        String result = userService.fowllowSomeone(userId,followId);
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
+                Code.OK,
+                Code.NO_ERROR_MESSAGE,
+                result,
+                "/user/{userId}/follow/{followId}",
+                null);
+        return baseResponse;
+    }
+
+    @RequestMapping(value = "/{userId}/unfollow/{followId}",method = RequestMethod.DELETE)
+    public BaseResponse deleteFollowRelation(@PathVariable("userId") int userId, @PathVariable("followId") int followId){
+        String result = userService.deleteFollowRelation(userId,followId);
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
+                Code.OK,
+                Code.NO_ERROR_MESSAGE,
+                result,
+                "/user/{userId}/unfollow/{followId}",
+                null);
+        return baseResponse;
+    }
+
+    @RequestMapping(value = "/{userId}/likes/{momentId}",method = RequestMethod.POST)
+    public BaseResponse insertLikesRelation(@PathVariable("userId") int userId,
+                                             @PathVariable("momentId") int momentId){
+        String result = userService.insertLikeMoment(userId,momentId);
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
+                Code.OK,
+                Code.NO_ERROR_MESSAGE,
+                result,
+                "/user/{userId}/likes/{momentId}",
+                null);
+        return baseResponse;
+    }
+
+
+    @RequestMapping(value = "/{userId}/cancels/{momentId}",method = RequestMethod.DELETE)
+    public BaseResponse deleteLikesRelation(@PathVariable("userId") int userId,
+                                            @PathVariable("momentId") int momentId){
+        String result = userService.deleteLikeMoment(userId,momentId);
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
+                Code.OK,
+                Code.NO_ERROR_MESSAGE,
+                result,
+                "/user/{userId}/cancels/{momentId}",
+                null);
+        return baseResponse;
+    }
+
+
+    @RequestMapping(value = "/{userId}/star/{skillId}",method = RequestMethod.POST)
+    public BaseResponse starSkill(@PathVariable("userId") int userId,
+                                            @PathVariable("skillId") int skillId){
+        String result = userService.starSkill(userId,skillId);
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
+                Code.OK,
+                Code.NO_ERROR_MESSAGE,
+                result,
+                "/user/{userId}/star/{skillId}",
+                null);
+        return baseResponse;
+    }
+
+    @RequestMapping(value = "/{userId}/unstar/{skillId}",method = RequestMethod.DELETE)
+    public BaseResponse unstarSkill(@PathVariable("userId") int userId,
+                                  @PathVariable("skillId") int skillId){
+        String result = userService.unstarSkill(userId,skillId);
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
+                Code.OK,
+                Code.NO_ERROR_MESSAGE,
+                result,
+                "/user/{userId}/unstar/{momentId}",
+                null);
+        return baseResponse;
+    }
 }

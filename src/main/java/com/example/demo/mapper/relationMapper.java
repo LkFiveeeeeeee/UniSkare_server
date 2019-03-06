@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Select;
 
 public interface relationMapper {
     @Insert({"INSERT INTO relation VALUE(#{followId},#{fanId});"})
-    void insertUserRelation(@Param("followId") int followId,
+    int insertUserRelation(@Param("followId") int followId,
                               @Param("fanId") int fanId);
 
     @Select({"SELECT followId FROM relation WHERE fanId=#{fanId}"})
@@ -16,13 +16,14 @@ public interface relationMapper {
     @Select({"SELECT fanId FROM relation WHERE followId=#{followId}"})
     int[] findFans(@Param("followId") int userId);
 
+
     @Select({"SELECT EXISTS(SELECT * FROM relation WHERE" +
             "followId=#{followId} and fanId=#{fanId}"})
     boolean checkRecordingExist(@Param("followId") int followId,
                                 @Param("fanId") int fanId);
 
-    @Delete({"DELETE FROM relation WHERE likesId=#{likesId} and followId=#{followId}"})
-    void deleteUserRelation(@Param("followId") int followId,
+    @Delete({"DELETE FROM relation WHERE fanId=#{fanId} and followId=#{followId}"})
+    int deleteUserRelation(@Param("followId") int followId,
                               @Param("fanId") int fanId);
 
 

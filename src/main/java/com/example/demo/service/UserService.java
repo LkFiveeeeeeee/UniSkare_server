@@ -21,6 +21,10 @@ public class UserService {
     private momentMapper momentMapper;
     @Autowired
     private skillMapper skillMapper;
+    @Autowired
+    private MUrelationMapper mUrelationMapper;
+    @Autowired
+    private starSkillMapper starSkillMapper;
 
     //TODO 修正为正常版本
     public String login(){
@@ -68,6 +72,24 @@ public class UserService {
         return result;
     }
 
+    public String fowllowSomeone(int userId,int followId){
+        int result = relationMapper.insertUserRelation(followId,userId);
+        if(result != 0){
+            return ConstValue.INSERT_SUCCESS;
+        }else{
+            return ConstValue.OPERATION_FAIL;
+        }
+    }
+
+    public String deleteFollowRelation(int userId,int followId){
+        int result = relationMapper.deleteUserRelation(followId,userId);
+        if(result != 0){
+            return ConstValue.DELETE_SUCCESS;
+        }else{
+            return ConstValue.OPERATION_FAIL;
+        }
+    }
+
     public List<User> findFollows(int userId){
         List<User> users = new ArrayList<>();
         int[] followsId = relationMapper.findFollows(userId);
@@ -92,5 +114,41 @@ public class UserService {
 
     public List<Skill> findUserSkills(int userId){
         return skillMapper.selectSkillByUserId(userId);
+    }
+
+    public String insertLikeMoment(int userId,int momentId){
+        int result = mUrelationMapper.insertMUrelation(userId,momentId);
+        if(result != 0){
+            return ConstValue.INSERT_SUCCESS;
+        }else{
+            return ConstValue.OPERATION_FAIL;
+        }
+    }
+
+    public String deleteLikeMoment(int userId,int momentId){
+        int result = mUrelationMapper.deleteRelation(userId,momentId);
+        if(result != 0){
+            return ConstValue.DELETE_SUCCESS;
+        }else{
+            return ConstValue.OPERATION_FAIL;
+        }
+    }
+
+    public String starSkill(int userId,int skillId){
+        int result = starSkillMapper.insertSCrelation(skillId,userId);
+        if(result != 0){
+            return ConstValue.INSERT_SUCCESS;
+        }else{
+            return ConstValue.OPERATION_FAIL;
+        }
+    }
+
+    public String unstarSkill(int userId,int skillId){
+        int result = starSkillMapper.deleteStarRelation(userId,skillId);
+        if(result != 0){
+            return ConstValue.DELETE_SUCCESS;
+        }else{
+            return ConstValue.OPERATION_FAIL;
+        }
     }
 }
