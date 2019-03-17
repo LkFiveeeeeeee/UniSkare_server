@@ -8,18 +8,18 @@ import org.apache.ibatis.annotations.Select;
 public interface starSkillMapper {
     @Insert({"INSERT INTO starSkill VALUE(#{skillId},#{starId});"})
     int insertSCrelation(@Param("skillId") int skillId,
-                          @Param("starId") int starId);
+                          @Param("starId") String starId);
 
     @Select({"SELECT skillId FROM starSkill WHERE starId=#{starId}"})
-    int[] findStarSkillList(@Param("starId") int starId);
+    int[] findStarSkillList(@Param("starId") String starId);
 
 
     @Select({"SELECT EXISTS(SELECT * FROM starSkill WHERE" +
             "starId=#{starId} and skillId=#{skillId}"})
-    boolean checkRecordingExist(@Param("starId") int starId,
+    boolean checkRecordingExist(@Param("starId") String starId,
                                 @Param("skillId") int skillId);
 
     @Delete({"DELETE FROM starSkill WHERE starId=#{starId} and skillId=#{skillId}"})
-    int deleteStarRelation(@Param("starId") int starId,
+    int deleteStarRelation(@Param("starId") String starId,
                             @Param("skillId") int skillId);
 }

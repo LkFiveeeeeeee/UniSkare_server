@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 public class Comment {
     private int commentId;
     private int skillId;
-    private int userId;
+    private String userId;
     private int score;
     private String content;
     private String pic;
@@ -16,7 +16,6 @@ public class Comment {
 
     public Comment(){
         commentId = 0;
-        userId = 0;
         score = 0;
         content = null;
         pic = null;

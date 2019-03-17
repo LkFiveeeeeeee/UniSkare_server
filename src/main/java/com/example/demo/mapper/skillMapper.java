@@ -35,7 +35,7 @@ public interface skillMapper {
     Skill selectSkillBySkillId(@Param("skillId") int skillId);
 
     @Select({"SELECT * FROM skill WHERE userId=#{userId}"})
-    List<Skill> selectSkillByUserId(@Param("userId") int userId);
+    List<Skill> selectSkillByUserId(@Param("userId") String userId);
 
     @Delete({"DELETE FROM skill WHERE skillId=#{skillId}"})
     int deleteSkillBySkillId(@Param("skillId") int skillId);

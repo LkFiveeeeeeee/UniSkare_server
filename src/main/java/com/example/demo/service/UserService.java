@@ -26,20 +26,23 @@ public class UserService {
     @Autowired
     private starSkillMapper starSkillMapper;
 
+
+    public String register(String open_id){
+        if(!checkExist(open_id)) {
+            userMapper.insertUserOnlyPrimayKey(open_id);
+        }
+        return ConstValue.INSERT_SUCCESS;
+    }
     //TODO 修正为正常版本
-    public String login(){
-        User user = new User();
-        user.setUni_avatarUrl("11111");
-        user.setUni_uuid(new Long(111));
-        user.setUni_passPhone(false);
-        user.setUni_followsNum(1324);
-        user.setUni_indiSign("我爱吃米饭");
-        user.setUni_nickName("秃头码农");
+    public String login(String userId,String nickName,String avatar){
+        User user = userMapper.findById(userId);
+        user.setUni_nickName(nickName);
+        user.setUni_avatarUrl(avatar);
         userMapper._insertUser(user);
         return ConstValue.LOGIN_SUCCESS;
     }
 
-    public User getUserInfoById(int id){
+    public User getUserInfoById(String id){
         User user = userMapper.findById(id);
         return user;
     }
@@ -49,7 +52,7 @@ public class UserService {
     //1 : momentNum
     //2 : fansNum
     //3 : followsNum
-    public int updateInfoNum(int id, int num, int type){
+    public int updateInfoNum(String id, int num, int type){
         int result = 0;
         switch (type){
             case 1:
@@ -67,12 +70,12 @@ public class UserService {
         return result;
     }
 
-    public int updateAvatarAndName(String avatar,String name,int id){
+    public int updateAvatarAndName(String avatar,String name,String id){
         int result = userMapper.updateAvatarAndnickName(name,avatar,id);
         return result;
     }
 
-    public String fowllowSomeone(int userId,int followId){
+    public String fowllowSomeone(String userId,String followId){
         int result = relationMapper.insertUserRelation(followId,userId);
         if(result != 0){
             return ConstValue.INSERT_SUCCESS;
@@ -81,7 +84,7 @@ public class UserService {
         }
     }
 
-    public String deleteFollowRelation(int userId,int followId){
+    public String deleteFollowRelation(String userId,String followId){
         int result = relationMapper.deleteUserRelation(followId,userId);
         if(result != 0){
             return ConstValue.DELETE_SUCCESS;
@@ -90,33 +93,33 @@ public class UserService {
         }
     }
 
-    public List<User> findFollows(int userId){
+    public List<User> findFollows(String userId){
         List<User> users = new ArrayList<>();
-        int[] followsId = relationMapper.findFollows(userId);
-        for(int id:followsId){
+        String[] followsId = relationMapper.findFollows(userId);
+        for(String id:followsId){
             users.add(userMapper.findById(id));
         }
         return users;
     }
 
-    public List<User> findFans(int userId){
+    public List<User> findFans(String userId){
         List<User> users = new ArrayList<>();
-        int [] fansId = relationMapper.findFans(userId);
-        for(int id:fansId){
+        String [] fansId = relationMapper.findFans(userId);
+        for(String id:fansId){
             users.add(userMapper.findById(id));
         }
         return users;
     }
 
-    public List<Moment> findUserMoments(int userId){
+    public List<Moment> findUserMoments(String userId){
         return momentMapper.selectMomentByUserId(userId);
     }
 
-    public List<Skill> findUserSkills(int userId){
+    public List<Skill> findUserSkills(String userId){
         return skillMapper.selectSkillByUserId(userId);
     }
 
-    public String insertLikeMoment(int userId,int momentId){
+    public String insertLikeMoment(String userId,int momentId){
         int result = mUrelationMapper.insertMUrelation(userId,momentId);
         if(result != 0){
             return ConstValue.INSERT_SUCCESS;
@@ -125,7 +128,7 @@ public class UserService {
         }
     }
 
-    public String deleteLikeMoment(int userId,int momentId){
+    public String deleteLikeMoment(String userId,int momentId){
         int result = mUrelationMapper.deleteRelation(userId,momentId);
         if(result != 0){
             return ConstValue.DELETE_SUCCESS;
@@ -134,7 +137,7 @@ public class UserService {
         }
     }
 
-    public String starSkill(int userId,int skillId){
+    public String starSkill(String userId,int skillId){
         int result = starSkillMapper.insertSCrelation(skillId,userId);
         if(result != 0){
             return ConstValue.INSERT_SUCCESS;
@@ -143,12 +146,36 @@ public class UserService {
         }
     }
 
-    public String unstarSkill(int userId,int skillId){
+    public String unstarSkill(String userId,int skillId){
         int result = starSkillMapper.deleteStarRelation(userId,skillId);
         if(result != 0){
             return ConstValue.DELETE_SUCCESS;
         }else{
             return ConstValue.OPERATION_FAIL;
         }
+    }
+
+    public String updateAvatar(String avatar,String userId){
+        User user = userMapper.findById(userId);
+        userMapper.updateAvatar(avatar,userId);
+        if(user.isChange_avatar()){
+            return user.getUni_avatarUrl();
+        }
+        return null;
+    }
+
+    public String updateNickName(String nickName,String userId){
+        int result = userMapper.updateNickName(nickName,userId);
+        return (result!=0)?ConstValue.UPDATE_SUCCESS:ConstValue.OPERATION_FAIL;
+    }
+
+    public String updateNameAndAvatar(String nickName,String avatar,String userId){
+        int result = userMapper.updateAvatarAndnickName(nickName,avatar,userId);
+        return (result!=0)?ConstValue.UPDATE_SUCCESS:ConstValue.OPERATION_FAIL;
+    }
+
+
+    public boolean checkExist(String userId){
+        return userMapper.checkUserExist(userId);
     }
 }

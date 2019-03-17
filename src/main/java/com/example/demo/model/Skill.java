@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 @Data
 public class Skill {
     private int skillId;
-    private int userId;
+    private String userId;
     private String cover;
     private String video;
     private String displayPic;

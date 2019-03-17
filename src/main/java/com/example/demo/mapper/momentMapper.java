@@ -14,7 +14,7 @@ public interface momentMapper {
     int insertMoment(Moment moment);
 
     @Select({"Select * FROM moment WHERE userId=#{userId} ORDER BY time DESC"})
-    List<Moment> selectMomentByUserId(@Param("userId") int userId);
+    List<Moment> selectMomentByUserId(@Param("userId") String userId);
 
     @Select({"Select * FROM moment WHERE canSee=1 ORDER BY time DESC"})
     List<Moment> selectAllMoments();

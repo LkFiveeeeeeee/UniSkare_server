@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 @Data
 public class Moment {
     private int momentId;
-    private int userId;
+    private String userId;
     private String content;
     private String pic;
     private boolean canSee;

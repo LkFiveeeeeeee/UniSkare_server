@@ -7,12 +7,12 @@ import org.apache.ibatis.annotations.Select;
 
 public interface MUrelationMapper {
     @Insert({"INSERT INTO murelation VALUE(#{momentId},#{userId});"})
-    int insertMUrelation(@Param("userId") int userId,
+    int insertMUrelation(@Param("userId") String userId,
                             @Param("momentId") int momentId);
 
     @Select({"SELECT momentId FROM murelation WHERE userId=#{userId}"})
-    int[] findMoments(@Param("userId") int userId);
+    int[] findMoments(@Param("userId") String userId);
 
     @Delete({"DELETE FROM murelation WHERE userId=#{userId} AND momentId=#{momentId}"})
-    int deleteRelation(@Param("userId") int userId,@Param("momentId") int momentId);
+    int deleteRelation(@Param("userId") String userId,@Param("momentId") int momentId);
 }
