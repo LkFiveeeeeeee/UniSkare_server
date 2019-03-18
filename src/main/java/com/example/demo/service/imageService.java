@@ -15,6 +15,8 @@ import java.io.IOException;
 public class imageService {
     @Autowired
     private UserService userService;
+    @Autowired
+    private skillService skillService;
 
 
     public String upLoadUserPhoto(MultipartFile file,String userId){
@@ -23,16 +25,74 @@ public class imageService {
             return ConstValue.OPERATION_FAIL;
         }else{
             String imageName = userService.updateAvatar(ConstValue.IMAGE_GET_PATH+ "/" + avatarName,userId);
-            if(imageName != null){
-                try{
-                    int index = imageName.lastIndexOf('/');
-                    imageName = imageName.substring(index+1);
-                    deleteImage(imageName);//TODO check if the fix is true
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
+            deleteUrl(imageName);
             return ConstValue.UPDATE_SUCCESS + "&" + ConstValue.IMAGE_GET_PATH + "/" + avatarName;
+        }
+    }
+
+    public String upLoadSkillPhoto(MultipartFile file,int skillId){
+        String imageName = upLoad(file);
+        if(imageName == null){
+            return ConstValue.OPERATION_FAIL;
+        }else{
+            imageName = ConstValue.IMAGE_GET_PATH+"/"+imageName+"&";
+            int result = skillService.updateDisplayPic(imageName,skillId);
+            if(result == 1){
+                return ConstValue.UPDATE_SUCCESS;
+            }else{
+                return ConstValue.OPERATION_FAIL;
+            }
+        }
+    }
+
+    public String upLoadSkillCover(MultipartFile file,int skillId){
+        String imageName = upLoad(file);
+        if(imageName == null){
+            return ConstValue.OPERATION_FAIL;
+        }else{
+            imageName = ConstValue.IMAGE_GET_PATH+"/"+imageName+"&";
+            String deleteUrl = skillService.updateCover(imageName,skillId);
+            if(deleteUrl(deleteUrl)){
+                return ConstValue.UPDATE_SUCCESS;
+            }else{
+                return ConstValue.OPERATION_FAIL;
+            }
+        }
+    }
+
+    private boolean deleteUrl(String deleteUrl) {
+        if(deleteUrl != null){
+            try{
+                int index = deleteUrl.lastIndexOf('/');
+                deleteUrl = deleteUrl.substring(index+1);
+                deleteImage(deleteUrl);
+                return true;
+            }catch (IOException e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public String deleteSkillDisPic(String picUrl,int skillId){
+        String currentUrl = skillService.getDisUrl(skillId);
+        String[] deleteArray = picUrl.split("&");
+        for(String temp:deleteArray){
+            String fileUrl = temp.replaceAll(ConstValue.IMAGE_GET_PATH + "/","");
+            try{
+                deleteImage(fileUrl);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            currentUrl = currentUrl.replaceAll(temp+"&","");
+        }
+        int result = skillService.updateDeletePic(currentUrl,skillId);
+        if(result == 1){
+            return ConstValue.UPDATE_SUCCESS;
+        }else{
+            return ConstValue.OPERATION_FAIL;
         }
     }
 
@@ -65,5 +125,6 @@ public class imageService {
             }
         }
     }
+
 
 }
