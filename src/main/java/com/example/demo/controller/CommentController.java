@@ -5,6 +5,7 @@ import com.example.demo.model.Comment;
 import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Response.BaseResponse;
 import com.example.demo.model.Response.Code;
+import com.example.demo.model.commentInfo;
 import com.example.demo.service.commentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,26 @@ public class CommentController {
 
     @RequestMapping(value = "/belongToSkill/{skillId}",method = RequestMethod.GET)
     public BaseResponse getCommentBySkillId(@PathVariable("skillId") int skillId){
-        List<Comment> comments = commentService.getComments(skillId);
+        List<commentInfo> comments = commentService.getComments(skillId);
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
+                Code.OK,
+                Code.NO_ERROR_MESSAGE,
+                Code.NO_MESSAGE_AVAIABLE,
+                "/comment/belongToSkill/",
+                null);
+
+        if(comments != null){
+            baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
+            baseResponse.setData(comments);
+        }else{
+            baseResponse.setStatus(Code.NOT_FOUND);
+        }
+        return baseResponse;
+    }
+
+    @RequestMapping(value = "/belongToSkill/{skillId}/2",method = RequestMethod.GET)
+    public BaseResponse getTwoCommentsBySkillId(@PathVariable("skillId") int skillId){
+        List<commentInfo> comments = commentService.getTwoComments(skillId);
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
                 Code.OK,
                 Code.NO_ERROR_MESSAGE,

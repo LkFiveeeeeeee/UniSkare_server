@@ -17,6 +17,8 @@ public class imageService {
     private UserService userService;
     @Autowired
     private skillService skillService;
+    @Autowired
+    private momentService momentService;
 
 
     public String upLoadUserPhoto(MultipartFile file,String userId){
@@ -60,6 +62,23 @@ public class imageService {
         }
     }
 
+
+    public String upLoadMomentPhoto(MultipartFile file,int momentId){
+        String imageName = upLoad(file);
+        if(imageName == null){
+            return ConstValue.OPERATION_FAIL;
+        }else{
+            imageName = ConstValue.IMAGE_GET_PATH+"/"+imageName+"&";
+            int result = momentService.updateDisplayPic(imageName,momentId);
+            if(result == 1){
+                return ConstValue.UPDATE_SUCCESS;
+            }else{
+                return ConstValue.OPERATION_FAIL;
+            }
+        }
+    }
+
+
     private boolean deleteUrl(String deleteUrl) {
         if(deleteUrl != null){
             try{
@@ -78,16 +97,15 @@ public class imageService {
 
     public String deleteSkillDisPic(String picUrl,int skillId){
         String currentUrl = skillService.getDisUrl(skillId);
-        String[] deleteArray = picUrl.split("&");
-        for(String temp:deleteArray){
-            String fileUrl = temp.replaceAll(ConstValue.IMAGE_GET_PATH + "/","");
-            try{
-                deleteImage(fileUrl);
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-            currentUrl = currentUrl.replaceAll(temp+"&","");
+
+        String fileUrl = picUrl.replaceAll(ConstValue.IMAGE_GET_PATH + "/","");
+        try{
+            deleteImage(fileUrl);
+        }catch (IOException e){
+            e.printStackTrace();
         }
+        currentUrl = currentUrl.replaceAll(picUrl+"&","");
+
         int result = skillService.updateDeletePic(currentUrl,skillId);
         if(result == 1){
             return ConstValue.UPDATE_SUCCESS;
@@ -96,6 +114,25 @@ public class imageService {
         }
     }
 
+
+    public String deleteMomentDisPic(String picUrl,int momentId){
+        String currentUrl = momentService.getDisUrl(momentId);
+
+        String fileUrl = picUrl.replaceAll(ConstValue.IMAGE_GET_PATH + "/","");
+        try{
+            deleteImage(fileUrl);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        currentUrl = currentUrl.replaceAll(picUrl+"&","");
+
+        int result = momentService.updateDeletePic(currentUrl,momentId);
+        if(result == 1){
+            return ConstValue.UPDATE_SUCCESS;
+        }else{
+            return ConstValue.OPERATION_FAIL;
+        }
+    }
 
     public String upLoad(MultipartFile file){
         Image image = new Image();
@@ -125,6 +162,4 @@ public class imageService {
             }
         }
     }
-
-
 }

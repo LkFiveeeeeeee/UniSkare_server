@@ -3,6 +3,10 @@ package com.example.demo.service;
 import com.example.demo.mapper.skillMapper;
 import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Skill;
+import com.example.demo.model.skillShow;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,14 +22,14 @@ public class skillService {
     public int insertSkill(Skill skill){
         int result = skillMapper.insertSkill(skill);
         if(result >= 0){
-            return result;
+            return skill.getSkillId();
         }else{
             return -1;
         }
     }
 
     public String updateSkill(Skill skill){
-        int result = skillMapper.insertSkill(skill);
+        int result = skillMapper.updateSkill(skill);
         if(result != 0){
             return ConstValue.INSERT_SUCCESS;
         }else{
@@ -33,8 +37,11 @@ public class skillService {
         }
     }
 
-    public List<Skill> getAllSkill(){
-        return skillMapper.selectAllSkillOrderByTime();
+    public PageInfo<skillShow> getAllSkill(int page){
+        PageHelper.startPage(page,10);
+        List<skillShow> skillShows = skillMapper.selectAllSkillOrderByTime();
+        PageInfo<skillShow> pageInfo = new PageInfo<skillShow>(skillShows);
+        return pageInfo;
     }
 
     public List<Skill> getSkillByType(String type){
@@ -53,6 +60,14 @@ public class skillService {
             return ConstValue.OPERATION_FAIL;
         }
     }
+
+    public PageInfo<skillShow> searchSkill(int page,String skillName){
+        PageHelper.startPage(page,10);
+        List<skillShow> skillShows = skillMapper.searchSkill(skillName);
+        PageInfo<skillShow> pageInfo = new PageInfo<skillShow>(skillShows);
+        return pageInfo;
+    }
+
 
     public int updateDisplayPic(String pic,int skillId){
         return skillMapper.updateDisplayPic(pic,skillId);

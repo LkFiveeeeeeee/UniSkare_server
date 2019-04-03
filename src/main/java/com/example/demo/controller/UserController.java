@@ -1,15 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.CodeResponse;
+import com.example.demo.model.*;
 import com.example.demo.model.ConstantValue.ConstValue;
-import com.example.demo.model.Moment;
 import com.example.demo.model.Response.BaseResponse;
 import com.example.demo.model.Response.Code;
-import com.example.demo.model.Skill;
-import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import com.example.demo.service.imageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,14 +156,15 @@ public class UserController {
     }
 
     @RequestMapping(value = "/information/{id}/follows",method = RequestMethod.GET)
-    public BaseResponse getFollowsInfo(@PathVariable("id") String id){
+    public BaseResponse getFollowsInfo(@PathVariable("id") String id,
+                                       @RequestParam("page") int page){
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
                 , Code.NO_MESSAGE_AVAIABLE
                 , "/user/information/follows/"
                 , null);
-        List<User> userList = userService.findFollows(id);
+        PageInfo<userInfo> userList = userService.findFollows(page,id);
         if(userList != null){
             baseResponse.setData(userList);
             baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
@@ -175,14 +175,15 @@ public class UserController {
     }
 
     @RequestMapping(value = "/information/{id}/fans",method = RequestMethod.GET)
-    public BaseResponse getFansInfo(@PathVariable("id") String id){
+    public BaseResponse getFansInfo(@PathVariable("id") String id,
+                                    @RequestParam("page") int page){
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
                 , Code.NO_MESSAGE_AVAIABLE
                 , "/user/information/fans/"
                 , null);
-        List<User> userList = userService.findFans(id);
+        PageInfo<userInfo> userList = userService.findFans(page,id);
         if(userList != null){
             baseResponse.setData(userList);
             baseResponse.setMessage(ConstValue.QUERY_SUCCESS);

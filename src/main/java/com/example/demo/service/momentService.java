@@ -1,8 +1,12 @@
 package com.example.demo.service;
 
+import com.example.demo.mapper.MUrelationMapper;
 import com.example.demo.mapper.momentMapper;
 import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Moment;
+import com.example.demo.model.momentShow;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,18 +16,20 @@ import java.util.List;
 public class momentService {
     @Autowired
     momentMapper momentMapper;
+    @Autowired
+    MUrelationMapper mUrelationMapper;
 
-    public String insertMoment(Moment moment){
+    public int insertMoment(Moment moment){
         int result = momentMapper.insertMoment(moment);
         if(result == 1){
-            return ConstValue.INSERT_SUCCESS;
+            return moment.getMomentId();
         }else{
-            return ConstValue.OPERATION_FAIL;
+            return -1;
         }
     }
 
     public String updateMoment(Moment moment){
-        int result = momentMapper.insertMoment(moment);
+        int result = momentMapper.updateMoment(moment);
         if(result != 0){
             return ConstValue.UPDATE_SUCCESS;
         }else{
@@ -31,8 +37,22 @@ public class momentService {
         }
     }
 
-    public List<Moment> getAllMoment(){
-        return momentMapper.selectAllMoments();
+    public PageInfo<momentShow> getAllMoment(int index,String userId){
+
+        PageHelper.startPage(index,10);
+        List<momentShow> momentShows = momentMapper.selectAllMoments();
+        int[] likes = mUrelationMapper.findMoments(userId);
+        for(momentShow momentShow:momentShows){
+            for(int likeId:likes){
+                if(momentShow.getMomentId() == likeId){
+                    momentShow.setIslike(true);
+                }else{
+                    momentShow.setIslike(false);
+                }
+            }
+        }
+        PageInfo<momentShow> pageInfo = new PageInfo<momentShow>(momentShows);
+        return pageInfo;
     }
 
     public String deleteMoment(int momentId){
@@ -42,5 +62,22 @@ public class momentService {
         }else{
             return ConstValue.OPERATION_FAIL;
         }
+    }
+
+    public Moment selectMomentByMomentId(int momentId){
+        return momentMapper.selectMomentByMomentId(momentId);
+    }
+
+    public int updateDisplayPic(String pic,int momentId){
+        return momentMapper.updateDisplayPic(pic,momentId);
+    }
+
+
+    public String getDisUrl(int momentId){
+        return momentMapper.selectDisplayPicByMomentId(momentId);
+    }
+
+    public int updateDeletePic(String pic,int momentId){
+        return momentMapper.deleteSomePicUrl(pic,momentId);
     }
 }

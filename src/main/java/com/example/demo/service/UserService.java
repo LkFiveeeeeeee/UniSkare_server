@@ -5,6 +5,10 @@ import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Moment;
 import com.example.demo.model.Skill;
 import com.example.demo.model.User;
+import com.example.demo.model.userInfo;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,22 +97,18 @@ public class UserService {
         }
     }
 
-    public List<User> findFollows(String userId){
-        List<User> users = new ArrayList<>();
-        String[] followsId = relationMapper.findFollows(userId);
-        for(String id:followsId){
-            users.add(userMapper.findById(id));
-        }
-        return users;
+    public PageInfo<userInfo> findFollows(int page, String userId){
+        PageHelper.startPage(page,10);
+        List<userInfo> users  = relationMapper.findFollows(userId);
+        PageInfo<userInfo> pageInfo = new PageInfo<>(users);
+        return pageInfo;
     }
 
-    public List<User> findFans(String userId){
-        List<User> users = new ArrayList<>();
-        String [] fansId = relationMapper.findFans(userId);
-        for(String id:fansId){
-            users.add(userMapper.findById(id));
-        }
-        return users;
+    public PageInfo<userInfo> findFans(int page,String userId){
+        PageHelper.startPage(page,10);
+        List<userInfo> users = relationMapper.findFans(userId);
+        PageInfo<userInfo> pageInfo = new PageInfo<>(users);
+        return pageInfo;
     }
 
     public List<Moment> findUserMoments(String userId){

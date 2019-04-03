@@ -6,6 +6,7 @@ import com.example.demo.mapper.skillMapper;
 import com.example.demo.model.Comment;
 import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Skill;
+import com.example.demo.model.commentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +33,11 @@ public class commentService {
         return ConstValue.INSERT_SUCCESS;
     }
 
-    public List<Comment> getComments(int skillId){
+    public List<commentInfo> getComments(int skillId){
         return commentMapper.selectCommentInfo(skillId);
     }
+
+    public List<commentInfo> getTwoComments(int skillId) { return commentMapper.selectCommentInfoOnTwo(skillId);}
 
     public String deleteComment(int commentId){
         int skillId = sCrelationMapper.findSkillId(commentId);

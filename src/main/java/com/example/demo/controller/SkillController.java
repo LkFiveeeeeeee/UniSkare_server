@@ -4,8 +4,10 @@ import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Response.BaseResponse;
 import com.example.demo.model.Response.Code;
 import com.example.demo.model.Skill;
+import com.example.demo.model.skillShow;
 import com.example.demo.service.imageService;
 import com.example.demo.service.skillService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,14 +57,32 @@ public class SkillController {
     }
 
     @RequestMapping(value = "/all",method = RequestMethod.GET)
-    public BaseResponse getAllSkills(){
+    public BaseResponse getAllSkills(@RequestParam("page") int page){
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
                 , Code.NO_MESSAGE_AVAIABLE
                 , "/skill/update"
                 , null);
-        List<Skill> skills = skillService.getAllSkill();
+        PageInfo<skillShow> skills = skillService.getAllSkill(page);
+        if(skills != null){
+            baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
+            baseResponse.setData(skills);
+        }else{
+            baseResponse.setStatus(Code.NOT_FOUND);
+        }
+        return baseResponse;
+    }
+
+    @RequestMapping(value = "/search",method = RequestMethod.GET)
+    public BaseResponse getAllSkills(@RequestParam("page") int page,@RequestParam("name") String name){
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
+                , Code.OK
+                , Code.NO_ERROR_MESSAGE
+                , Code.NO_MESSAGE_AVAIABLE
+                , "/skill/search"
+                , null);
+        PageInfo<skillShow> skills = skillService.searchSkill(page,name);
         if(skills != null){
             baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
             baseResponse.setData(skills);
@@ -144,8 +164,8 @@ public class SkillController {
     }
 
     @RequestMapping(value = "/update/{skillId}/displayPic",method = RequestMethod.POST)
-    BaseResponse updatePic(@PathVariable("skillId") int skillId,
-                           @RequestParam("film") MultipartFile file){
+    public BaseResponse updatePic(@PathVariable("skillId") int skillId,
+                           @RequestParam("file") MultipartFile file){
         String result = imageService.upLoadSkillPhoto(file,skillId);
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
@@ -161,7 +181,7 @@ public class SkillController {
     }
 
     @RequestMapping(value = "/update/{skillId}/cover",method = RequestMethod.POST)
-    BaseResponse updateCover(@PathVariable("skillId") int skillId,
+    public BaseResponse updateCover(@PathVariable("skillId") int skillId,
                              @RequestParam("file") MultipartFile file){
         String result = imageService.upLoadSkillCover(file, skillId);
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()

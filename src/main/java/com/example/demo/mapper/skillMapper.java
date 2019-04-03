@@ -1,22 +1,27 @@
 package com.example.demo.mapper;
 
 import com.example.demo.model.Skill;
+import com.example.demo.model.skillShow;
 import org.apache.ibatis.annotations.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.List;
 
 public interface skillMapper {
     @Insert({"INSERT INTO skill VALUE(#{skillId},#{userId},#{cover}," +
             "#{video},#{displayPic},#{title},#{content},#{price}," +
-            "#{unit},#{model},#{type},#{score},#{date})" +
+            "#{unit},#{model},#{type},#{score},#{date},#{commentNum})" +
             "on duplicate key update skillId=#{skillId},userId=#{userId}," +
             "cover=#{cover},video=#{video},displayPic=#{displayPic},title=#{title}," +
             "content=#{content},price=#{price},unit=#{unit},model=#{model}," +
-            "type=#{type},score=#{score},date=#{date}"})
-    @Options(useGeneratedKeys = true,keyProperty = "skillId",keyColumn = "skillId")
+            "type=#{type},score=#{score},date=#{date},commentNum=#{commentNum}"})
+    @Options(useGeneratedKeys = true,keyProperty = "skillId")
     int insertSkill(Skill skill);
 
-    @Update({"UPDATE skill SET displayPic =concat(displayPic,#{pic}) WHERE skillId=#{id}"})
+    @Update({"UPDATE skill SET title=#{title},content=#{content},type=#{type} WHERE skillId=#{skillId}"})
+    int updateSkill(@ModelAttribute Skill skill);
+
+    @Update({"UPDATE skill SET displayPic =concat(IFNULL(displayPic,''),#{pic}) WHERE skillId=#{id}"})
     int updateDisplayPic(@Param("pic") String pic,@Param("id") int skillId);
 
     @Update({"UPDATE skill SET displayPic = #{pic} WHERE skillId=#{id}"})
@@ -37,8 +42,19 @@ public interface skillMapper {
     @Select({"SELECT * FROM skill WHERE type = #{type} ORDER BY date DESC"})
     List<Skill> selectSkillByType(@Param("type") String type);
 
-    @Select({"SELECT * FROM skill ORDER BY date DESC"})
-    List<Skill> selectAllSkillOrderByTime();
+    @Select({"SELECT skillId,user.uni_avatarUrl as image, user.uni_nickName as name, " +
+            "skill.content as textBody, skill.title , skill.cover" +
+            " FROM user,skill " +
+            " WHERE user.uni_uuid = skill.userId" +
+            " ORDER BY date DESC"})
+    List<skillShow> selectAllSkillOrderByTime();
+
+    @Select({"SELECT skillId,user.uni_avatarUrl as image, user.uni_nickName as name, " +
+            "skill.content as textBody, skill.title , skill.cover" +
+            " FROM user,skill " +
+            " WHERE user.uni_uuid = skill.userId and skill.title LIKE '%${text}%' " +
+            " ORDER BY date DESC"})
+    List<skillShow> searchSkill(@Param("text") String text);
 
     @Select({"SELECT * FROM skill WHERE skillId=#{skillId}"})
     Skill selectSkillBySkillId(@Param("skillId") int skillId);
