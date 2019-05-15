@@ -9,10 +9,8 @@ import java.util.List;
 
 public interface momentMapper {
     @Insert({"INSERT INTO moment VALUE(#{momentId},#{userId},#{content}," +
-            "#{pic},#{canSee},#{likesNum},#{time})" +
-            "on duplicate key update momentId=#{momentId},userId=#{userId}," +
-            "content=#{content},pic=#{pic},canSee=#{canSee},likesNum=#{likesNum}," +
-            "time=#{time}"})
+            "#{pic},#{canSee},#{likesNum},#{time})"
+            })
     @Options(useGeneratedKeys = true,keyProperty = "momentId")
     int insertMoment(Moment moment);
 
@@ -26,17 +24,26 @@ public interface momentMapper {
     int deleteSomePicUrl(@Param("pic") String pic,@Param("id") int momentId);
 
 
-    @Select({"Select * FROM moment WHERE userId=#{userId} ORDER BY time DESC"})
-    List<Moment> selectMomentByUserId(@Param("userId") String userId);
+    @Select({"Select uni_uuid as userId, uni_avatarUrl as avatar, " +
+            " uni_nickName as userName, content, time, likesNum as likeNum, momentId,pic , canSee " +
+            " FROM moment,user WHERE moment.canSee=1 AND " +
+            " moment.userId = #{userId} AND" +
+            " moment.userId = user.uni_uuid " +
+            " ORDER BY time DESC"})
+    List<momentShow> selectMomentByUserId(@Param("userId") String userId);
 
     @Select({"Select uni_uuid as userId, uni_avatarUrl as avatar, " +
-            " uni_nickName as userName, content, time, likesNum as likeNum, momentId,pic " +
+            " uni_nickName as userName, content, time, likesNum as likeNum, momentId,pic , canSee " +
             " FROM moment,user WHERE moment.canSee=1 AND moment.userId = user.uni_uuid " +
             " ORDER BY time DESC"})
     List<momentShow> selectAllMoments();
 
-    @Select({"SELECT * FROM moment WHERE momentId=#{id}"})
-    Moment selectMomentByMomentId(@Param("id") int momentId);
+    @Select({"Select * from (Select uni_uuid as userId, uni_avatarUrl as avatar, " +
+            " uni_nickName as userName, content, time, likesNum as likeNum, momentId,pic, canSee " +
+            " FROM moment,user WHERE moment.canSee=1 AND moment.userId = user.uni_uuid " +
+            " ORDER BY time DESC) as temp where momentId=#{momentId}"})
+    momentShow selectOneMoment(@Param("momentId") int momentId);
+
 
     @Select({"SELECT pic FROM moment WHERE momentId=#{momentId}"})
     String selectDisplayPicByMomentId(@Param("momentId") int momentId);

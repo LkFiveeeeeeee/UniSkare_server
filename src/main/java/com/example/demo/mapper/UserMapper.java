@@ -40,17 +40,30 @@ public interface UserMapper {
                 "WHERE User.uni_uuid=#{id};"})
         int updateNickName(@Param("nickName") String nickName,@Param("id") String id);
 
-        @Update({"UPDATE User SET User.uni_momentNum = #{momentNum}" +
+        @Update({"UPDATE User SET User.uni_momentNum = User.uni_momentNum+1" +
                 " WHERE User.uni_uuid = #{id};"})
-        int updateMomentNum(@Param("id") String id,@Param("momentNum") int momentNum);
+        int updateMomentNum(@Param("id") String id);
 
-        @Update({"UPDATE User SET User.uni_fansNum = #{fansNum}" +
+        @Update({"UPDATE User SET User.uni_fansNum = User.uni_fansNum+1" +
                 " WHERE User.uni_uuid = #{id};"})
-        int updateFansNum(@Param("id") String id,@Param("fansNum") int fansNum);
+        int updateFansNum(@Param("id") String id);
 
-        @Update({"UPDATE User SET User.uni_followsNum = #{followsNum}" +
+        @Update({"UPDATE User SET User.uni_followsNum = User.uni_followsNum+1" +
                 " WHERE User.uni_uuid = #{id};"})
-        int updateFollowsNum(@Param("id") String id,@Param("followsNum") int followsNum);
+        int updateFollowsNum(@Param("id") String id);
+
+        @Update({"UPDATE User SET User.uni_momentNum = User.uni_momentNum-1" +
+                " WHERE User.uni_uuid = #{id};"})
+        int decreaseMomentNum(@Param("id") String id);
+
+        @Update({"UPDATE User SET User.uni_fansNum = User.uni_fansNum-1" +
+                " WHERE User.uni_uuid = #{id};"})
+        int decreaseFansNum(@Param("id") String id);
+
+        @Update({"UPDATE User SET User.uni_followsNum = User.uni_followsNum-1" +
+                " WHERE User.uni_uuid = #{id};"})
+        int decreaseFollowsNum(@Param("id") String id);
+
 
         @Update({"UPDATE User SET User.uni_nickName = #{nickName},User.uni_avatarUrl=#{avatar}" +
                 " WHERE User.uni_uuid = #{id};"})

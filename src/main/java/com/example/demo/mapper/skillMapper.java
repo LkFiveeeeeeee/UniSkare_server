@@ -59,8 +59,12 @@ public interface skillMapper {
     @Select({"SELECT * FROM skill WHERE skillId=#{skillId}"})
     Skill selectSkillBySkillId(@Param("skillId") int skillId);
 
-    @Select({"SELECT * FROM skill WHERE userId=#{userId}"})
-    List<Skill> selectSkillByUserId(@Param("userId") String userId);
+    @Select({"SELECT skillId,user.uni_avatarUrl as image, user.uni_nickName as name, " +
+            "skill.content as textBody, skill.title , skill.cover" +
+            " FROM user,skill " +
+            " WHERE user.uni_uuid = skill.userId and user.uni_uuid = #{userId} " +
+            " ORDER BY date DESC"})
+    List<skillShow> selectSkillByUserId(@Param("userId") String userId);
 
     @Select({"SELECT displayPic FROM skill WHERE skillId=#{skillId}"})
     String selectDisplayPicBySkillId(@Param("skillId") int skillId);

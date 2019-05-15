@@ -1,18 +1,12 @@
 package com.example.demo.service;
 
 import com.example.demo.mapper.*;
+import com.example.demo.model.*;
 import com.example.demo.model.ConstantValue.ConstValue;
-import com.example.demo.model.Moment;
-import com.example.demo.model.Skill;
-import com.example.demo.model.User;
-import com.example.demo.model.userInfo;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -56,6 +50,7 @@ public class UserService {
     //1 : momentNum
     //2 : fansNum
     //3 : followsNum
+    /*
     public int updateInfoNum(String id, int num, int type){
         int result = 0;
         switch (type){
@@ -72,16 +67,18 @@ public class UserService {
                 break;
         }
         return result;
-    }
+    }*/
 
     public int updateAvatarAndName(String avatar,String name,String id){
         int result = userMapper.updateAvatarAndnickName(name,avatar,id);
         return result;
     }
 
-    public String fowllowSomeone(String userId,String followId){
+    public String followSomeone(String userId, String followId){
         int result = relationMapper.insertUserRelation(followId,userId);
         if(result != 0){
+            userMapper.updateFollowsNum(userId);
+            userMapper.updateFansNum(followId);
             return ConstValue.INSERT_SUCCESS;
         }else{
             return ConstValue.OPERATION_FAIL;
@@ -91,6 +88,8 @@ public class UserService {
     public String deleteFollowRelation(String userId,String followId){
         int result = relationMapper.deleteUserRelation(followId,userId);
         if(result != 0){
+            userMapper.decreaseFollowsNum(userId);
+            userMapper.decreaseFansNum(followId);
             return ConstValue.DELETE_SUCCESS;
         }else{
             return ConstValue.OPERATION_FAIL;
@@ -111,12 +110,28 @@ public class UserService {
         return pageInfo;
     }
 
-    public List<Moment> findUserMoments(String userId){
-        return momentMapper.selectMomentByUserId(userId);
+    public PageInfo<momentShow> findUserMoments(int page,String userId){
+        PageHelper.startPage(page,10);
+        List<momentShow> momentShows = momentMapper.selectMomentByUserId(userId);
+        int[] likes = mUrelationMapper.findMoments(userId);
+        for(momentShow momentShow:momentShows){
+            for(int likeId:likes){
+                if(momentShow.getMomentId() == likeId){
+                    momentShow.setIslike(true);
+                }else{
+                    momentShow.setIslike(false);
+                }
+            }
+        }
+        PageInfo<momentShow> pageInfo = new PageInfo<>(momentShows);
+        return pageInfo;
     }
 
-    public List<Skill> findUserSkills(String userId){
-        return skillMapper.selectSkillByUserId(userId);
+    public PageInfo<skillShow> findUserSkills(int page,String userId){
+        PageHelper.startPage(page,10);
+        List<skillShow> skillShows = skillMapper.selectSkillByUserId(userId);
+        PageInfo<skillShow> pageInfo = new PageInfo<skillShow>(skillShows);
+        return pageInfo;
     }
 
     public String insertLikeMoment(String userId,int momentId){
@@ -138,7 +153,7 @@ public class UserService {
     }
 
     public String starSkill(String userId,int skillId){
-        int result = starSkillMapper.insertSCrelation(skillId,userId);
+        int result = starSkillMapper.insertStarRelation(skillId,userId);
         if(result != 0){
             return ConstValue.INSERT_SUCCESS;
         }else{

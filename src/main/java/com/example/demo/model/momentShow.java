@@ -14,6 +14,7 @@ public class momentShow {
     Timestamp time;
     String content;
     boolean islike;
+    boolean canSee;
     String pic;
     int likeNum;
 }

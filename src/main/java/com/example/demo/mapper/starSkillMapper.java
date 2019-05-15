@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Select;
 
 public interface starSkillMapper {
     @Insert({"INSERT INTO starSkill VALUE(#{skillId},#{starId});"})
-    int insertSCrelation(@Param("skillId") int skillId,
-                          @Param("starId") String starId);
+    int insertStarRelation(@Param("skillId") int skillId,
+                           @Param("starId") String starId);
 
     @Select({"SELECT skillId FROM starSkill WHERE starId=#{starId}"})
     int[] findStarSkillList(@Param("starId") String starId);

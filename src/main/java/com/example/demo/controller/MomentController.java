@@ -82,9 +82,9 @@ public class MomentController {
         return baseResponse;
     }
 
-    @RequestMapping(value = "/delete/{momentId}",method = RequestMethod.DELETE)
-    public BaseResponse deleteMoment(@PathVariable("momentId") int momentId){
-        String result = momentService.deleteMoment(momentId);
+    @RequestMapping(value = "/delete/{userId}/{momentId}",method = RequestMethod.DELETE)
+    public BaseResponse deleteMoment(@PathVariable("momentId") int momentId,@PathVariable("userId") String id){
+        String result = momentService.deleteMoment(momentId,id);
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
@@ -136,12 +136,12 @@ public class MomentController {
 
     @RequestMapping(value = "/{momentId}/info",method = RequestMethod.GET)
     public BaseResponse selectMomentByMomentId(@PathVariable("momentId") int momentId){
-        Moment moment = momentService.selectMomentByMomentId(momentId);
+        momentShow moment = momentService.selectOneMomentById(momentId);
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
                 , ConstValue.OPERATION_FAIL
-                , "/moment/update/{momentId}/displayPic"
+                , "/moment/info"
                 , null);
         if(moment != null){
             baseResponse.setData(moment);

@@ -7,7 +7,6 @@ import com.example.demo.model.Response.Code;
 import com.example.demo.service.UserService;
 import com.example.demo.service.imageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +83,7 @@ public class UserController {
         }
         return baseResponse;
     }
-
+/*
     @RequestMapping(value = "/information/updateMomentNum",method = RequestMethod.POST)
     public BaseResponse updateMomentNum(@RequestParam("infoNum") int num,@RequestParam("id") String id){
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
@@ -134,7 +133,7 @@ public class UserController {
             baseResponse.setStatus(Code.NOT_FOUND);
         }
         return baseResponse;
-    }
+    }*/
 
     @RequestMapping(value = "/information/avatarAndnickName",method = RequestMethod.POST)
     public BaseResponse updateAvatarAndnickName(@RequestParam("avatar") String avatar,
@@ -194,14 +193,14 @@ public class UserController {
     }
 
     @RequestMapping(value = "/information/{id}/moments",method = RequestMethod.GET)
-    public BaseResponse getMoments(@PathVariable("id") String userId){
+    public BaseResponse getMoments(@PathVariable("id") String userId,@RequestParam("page") int page){
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
                 , Code.NO_MESSAGE_AVAIABLE
                 , "/user/information/moments/"
                 , null);
-        List<Moment> moments = userService.findUserMoments(userId);
+        PageInfo<momentShow> moments = userService.findUserMoments(page,userId);
         if(moments != null){
             baseResponse.setData(moments);
             baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
@@ -212,14 +211,14 @@ public class UserController {
     }
 
     @RequestMapping(value = "/information/{id}/skills",method = RequestMethod.GET)
-    public BaseResponse getSkills(@PathVariable("id") String userId){
+    public BaseResponse getSkills(@PathVariable("id") String userId,@RequestParam("page") int page){
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
                 , Code.NO_MESSAGE_AVAIABLE
                 , "/user/information/skills/"
                 , null);
-        List<Skill> skills = userService.findUserSkills(userId);
+        PageInfo<skillShow> skills = userService.findUserSkills(page,userId);
         if(skills != null){
             baseResponse.setData(skills);
             baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
@@ -231,7 +230,7 @@ public class UserController {
 
     @RequestMapping(value = "/{userId}/follow/{followId}",method = RequestMethod.POST)
     public BaseResponse followSomeone(@PathVariable("userId") String userId,@PathVariable("followId") String followId){
-        String result = userService.fowllowSomeone(userId,followId);
+        String result = userService.followSomeone(userId,followId);
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString(),
                 Code.OK,
                 Code.NO_ERROR_MESSAGE,
@@ -302,7 +301,7 @@ public class UserController {
                 Code.OK,
                 Code.NO_ERROR_MESSAGE,
                 result,
-                "/user/{userId}/unstar/{momentId}",
+                "/user/{userId}/unstar/{skillId}",
                 null);
         return baseResponse;
     }
