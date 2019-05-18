@@ -17,6 +17,12 @@ public interface momentMapper {
     @Update({"UPDATE moment SET content=#{content},canSee=#{canSee} WHERE momentId=#{momentId}"})
     int updateMoment(@ModelAttribute Moment moment);
 
+    @Update({"UPDATE moment SET likesNum = likesNum+1 WHERE momentId=#{momentId}"})
+    int increaseLikesNum(@Param("momentId") int momentId);
+
+    @Update({"UPDATE moment SET likesNum = likesNum-1 WHERE momentId=#{momentId}"})
+    int decreaseLikesNum(@Param("momentId") int momentId);
+
     @Update({"UPDATE moment SET pic =concat(IFNULL(pic,''),#{pic}) WHERE momentId=#{id}"})
     int updateDisplayPic(@Param("pic") String pic,@Param("id") int momentId);
 
@@ -44,6 +50,13 @@ public interface momentMapper {
             " ORDER BY time DESC) as temp where momentId=#{momentId}"})
     momentShow selectOneMoment(@Param("momentId") int momentId);
 
+    @Select({"Select uni_uuid as userId, uni_avatarUrl as avatar, " +
+            " uni_nickName as userName, p.content, p.time, p.likesNum as likeNum, p.momentId,p.pic , p.canSee " +
+            " FROM user, (select moment.* from moment inner join " +
+            "murelation on murelation.userId =#{userId} and murelation.momentId = moment.momentId) as p " +
+            "WHERE p.canSee=1 AND p.userId = user.uni_uuid " +
+            " ORDER BY time DESC"})
+    List<momentShow> getStarMoment(@Param("userId") String userId);
 
     @Select({"SELECT pic FROM moment WHERE momentId=#{momentId}"})
     String selectDisplayPicByMomentId(@Param("momentId") int momentId);

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class Skill {
+public class SkillPage {
     private int skillId;
     private String userId;
     private String cover;
@@ -21,6 +21,7 @@ public class Skill {
     private double score;
     private Timestamp date;
     private int commentNum;
+    private boolean isStar;
 
-    public Skill(){}
+    public SkillPage(){}
 }

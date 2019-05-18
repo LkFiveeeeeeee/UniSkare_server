@@ -6,6 +6,7 @@ import com.example.demo.mapper.skillMapper;
 import com.example.demo.model.Comment;
 import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Skill;
+import com.example.demo.model.SkillPage;
 import com.example.demo.model.commentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class commentService {
         commentMapper.insertComment(comment);
         int keyId = comment.getCommentId();
         sCrelationMapper.insertSCrelation(keyId,comment.getSkillId());
-        Skill skill = skillMapper.selectSkillBySkillId(comment.getSkillId());
+        SkillPage skill = skillMapper.selectSkillBySkillId(comment.getSkillId());
         skillMapper.plusSkillCommentNum(comment.getSkillId());
         double score = (skill.getScore() * skill.getCommentNum() + comment.getScore())
                 /(skill.getCommentNum() + 1);
@@ -41,7 +42,7 @@ public class commentService {
 
     public String deleteComment(int commentId){
         int skillId = sCrelationMapper.findSkillId(commentId);
-        Skill skill = skillMapper.selectSkillBySkillId(skillId);
+        SkillPage skill = skillMapper.selectSkillBySkillId(skillId);
         Comment comment = commentMapper.selectCommentByCommentId(commentId);
         double score = skill.getScore() * skill.getCommentNum() - comment.getScore();
         score = score/(skill.getCommentNum() - 1);

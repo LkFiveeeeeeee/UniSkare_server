@@ -113,14 +113,12 @@ public class UserService {
     public PageInfo<momentShow> findUserMoments(int page,String userId){
         PageHelper.startPage(page,10);
         List<momentShow> momentShows = momentMapper.selectMomentByUserId(userId);
-        int[] likes = mUrelationMapper.findMoments(userId);
         for(momentShow momentShow:momentShows){
-            for(int likeId:likes){
-                if(momentShow.getMomentId() == likeId){
-                    momentShow.setIslike(true);
-                }else{
-                    momentShow.setIslike(false);
-                }
+            int result = mUrelationMapper.checkExistLikeRelation(userId,momentShow.getMomentId());
+            if(result != 0){
+                momentShow.setIslike(true);
+            }else{
+                momentShow.setIslike(false);
             }
         }
         PageInfo<momentShow> pageInfo = new PageInfo<>(momentShows);
@@ -134,9 +132,27 @@ public class UserService {
         return pageInfo;
     }
 
+    public PageInfo<skillShow> getStarSkill(int page,String userId){
+        PageHelper.startPage(page,10);
+        List<skillShow> skillShows = skillMapper.getStarSkill(userId);
+        PageInfo<skillShow> pageInfo = new PageInfo<>(skillShows);
+        return pageInfo;
+    }
+
+    public PageInfo<momentShow> getStarMoment(int page,String userId){
+        PageHelper.startPage(page,10);
+        List<momentShow> momentShows = momentMapper.getStarMoment(userId);
+        for(momentShow momentShow:momentShows){
+            momentShow.setIslike(true);
+        }
+        PageInfo<momentShow> pageInfo = new PageInfo<>(momentShows);
+        return pageInfo;
+    }
+
     public String insertLikeMoment(String userId,int momentId){
         int result = mUrelationMapper.insertMUrelation(userId,momentId);
         if(result != 0){
+            momentMapper.increaseLikesNum(momentId);
             return ConstValue.INSERT_SUCCESS;
         }else{
             return ConstValue.OPERATION_FAIL;
@@ -146,6 +162,7 @@ public class UserService {
     public String deleteLikeMoment(String userId,int momentId){
         int result = mUrelationMapper.deleteRelation(userId,momentId);
         if(result != 0){
+            momentMapper.decreaseLikesNum(momentId);
             return ConstValue.DELETE_SUCCESS;
         }else{
             return ConstValue.OPERATION_FAIL;

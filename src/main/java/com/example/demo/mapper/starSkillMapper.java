@@ -14,12 +14,15 @@ public interface starSkillMapper {
     int[] findStarSkillList(@Param("starId") String starId);
 
 
-    @Select({"SELECT EXISTS(SELECT * FROM starSkill WHERE" +
-            "starId=#{starId} and skillId=#{skillId}"})
+    @Select({"SELECT EXISTS(SELECT * FROM starSkill WHERE " +
+            "starId=#{starId} and skillId=#{skillId})"})
     boolean checkRecordingExist(@Param("starId") String starId,
                                 @Param("skillId") int skillId);
 
     @Delete({"DELETE FROM starSkill WHERE starId=#{starId} and skillId=#{skillId}"})
     int deleteStarRelation(@Param("starId") String starId,
                             @Param("skillId") int skillId);
+
+
+
 }

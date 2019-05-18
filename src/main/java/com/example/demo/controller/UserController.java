@@ -83,6 +83,43 @@ public class UserController {
         }
         return baseResponse;
     }
+
+    @RequestMapping(value = "/star/skill/{id}",method = RequestMethod.GET)
+    public BaseResponse getStarSkill(@RequestParam("page") int page,@PathVariable("id") String userId){
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
+                , Code.OK
+                , Code.NO_ERROR_MESSAGE
+                , Code.NO_MESSAGE_AVAIABLE
+                , "/user/star/skill"
+                , null);
+        PageInfo<skillShow> skillShows = userService.getStarSkill(page,userId);
+        if(skillShows != null){
+            baseResponse.setData(skillShows);
+            baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
+        }else{
+            baseResponse.setStatus(Code.NOT_FOUND);
+        }
+        return baseResponse;
+    }
+
+    @RequestMapping(value = "/star/moment/{id}",method = RequestMethod.GET)
+    public BaseResponse getStarMoment(@RequestParam("page") int page,@PathVariable("id") String userId){
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
+                , Code.OK
+                , Code.NO_ERROR_MESSAGE
+                , Code.NO_MESSAGE_AVAIABLE
+                , "/user/star/moment"
+                , null);
+        PageInfo<momentShow> momentShows = userService.getStarMoment(page,userId);
+        if(momentShows != null){
+            baseResponse.setData(momentShows);
+            baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
+        }else{
+            baseResponse.setStatus(Code.NOT_FOUND);
+        }
+        return baseResponse;
+    }
+
 /*
     @RequestMapping(value = "/information/updateMomentNum",method = RequestMethod.POST)
     public BaseResponse updateMomentNum(@RequestParam("infoNum") int num,@RequestParam("id") String id){

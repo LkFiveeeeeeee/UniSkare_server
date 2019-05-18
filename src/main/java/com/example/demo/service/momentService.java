@@ -49,14 +49,12 @@ public class momentService {
 
         PageHelper.startPage(index,10);
         List<momentShow> momentShows = momentMapper.selectAllMoments();
-        int[] likes = mUrelationMapper.findMoments(userId);
         for(momentShow momentShow:momentShows){
-            for(int likeId:likes){
-                if(momentShow.getMomentId() == likeId){
-                    momentShow.setIslike(true);
-                }else{
-                    momentShow.setIslike(false);
-                }
+            int result = mUrelationMapper.checkExistLikeRelation(userId,momentShow.getMomentId());
+            if(result != 0){
+                momentShow.setIslike(true);
+            }else{
+                momentShow.setIslike(false);
             }
         }
         PageInfo<momentShow> pageInfo = new PageInfo<>(momentShows);

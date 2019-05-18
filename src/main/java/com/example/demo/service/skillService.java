@@ -1,8 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.mapper.skillMapper;
+import com.example.demo.mapper.starSkillMapper;
 import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Skill;
+import com.example.demo.model.SkillPage;
 import com.example.demo.model.skillShow;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -11,6 +13,7 @@ import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -18,6 +21,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class skillService {
     @Autowired
     skillMapper skillMapper;
+    @Autowired
+    starSkillMapper starSkillMapper;
 
     public int insertSkill(Skill skill){
         int result = skillMapper.insertSkill(skill);
@@ -44,12 +49,33 @@ public class skillService {
         return pageInfo;
     }
 
+    public PageInfo<skillShow> getSkillByFullType(int page, int type){
+        PageHelper.startPage(page,10);
+        List<skillShow> skillShows = new ArrayList<>();
+        if(type == 0){
+            skillShows = skillMapper.selectSkillOrderByTime("学科技能");
+        }else if(type == 1){
+            skillShows = skillMapper.selectSkillOrderByTime("兴趣爱好");
+        }else{
+            skillShows = skillMapper.selectSkillOrderByTime("情感经验");
+        }
+        PageInfo<skillShow> pageInfo = new PageInfo<skillShow>(skillShows);
+        return pageInfo;
+    }
+
     public List<Skill> getSkillByType(String type){
         return skillMapper.selectSkillByType(type);
     }
 
-    public Skill getSkillBySkillId(int skillId){
-        return skillMapper.selectSkillBySkillId(skillId);
+    public SkillPage getSkillBySkillId(String userId,int skillId){
+        SkillPage skill = skillMapper.selectSkillBySkillId(skillId);
+        boolean result = starSkillMapper.checkRecordingExist(userId,skillId);
+        if(result){
+            skill.setStar(true);
+        }else{
+            skill.setStar(false);
+        }
+        return skill;
     }
 
     public String deleteSkill(int skillId){

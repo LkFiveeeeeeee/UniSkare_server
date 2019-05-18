@@ -4,10 +4,12 @@ import com.example.demo.model.ConstantValue.ConstValue;
 import com.example.demo.model.Response.BaseResponse;
 import com.example.demo.model.Response.Code;
 import com.example.demo.model.Skill;
+import com.example.demo.model.SkillPage;
 import com.example.demo.model.skillShow;
 import com.example.demo.service.imageService;
 import com.example.demo.service.skillService;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,8 +76,26 @@ public class SkillController {
         return baseResponse;
     }
 
+    @RequestMapping(value = "/info/{fullType}",method = RequestMethod.GET)
+    public BaseResponse getSkillByFullType(@PathVariable("fullType") int type,@RequestParam("page") int page){
+        BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
+                , Code.OK
+                , Code.NO_ERROR_MESSAGE
+                , Code.NO_MESSAGE_AVAIABLE
+                , "/skill/search"
+                , null);
+        PageInfo<skillShow> skills = skillService.getSkillByFullType(page,type);
+        if(skills != null){
+            baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
+            baseResponse.setData(skills);
+        }else{
+            baseResponse.setStatus(Code.NOT_FOUND);
+        }
+        return baseResponse;
+    }
+
     @RequestMapping(value = "/search",method = RequestMethod.GET)
-    public BaseResponse getAllSkills(@RequestParam("page") int page,@RequestParam("name") String name){
+    public BaseResponse searchSkills(@RequestParam("page") int page,@RequestParam("name") String name){
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
@@ -112,14 +132,14 @@ public class SkillController {
     }
 
     @RequestMapping(value = "/{skillId}",method = RequestMethod.GET)
-    public BaseResponse getSkillsBySkillId(@PathVariable("skillId") int skillId){
+    public BaseResponse getSkillsBySkillId(@Param("userId") String userId,@PathVariable("skillId") int skillId){
         BaseResponse baseResponse = new BaseResponse((new Timestamp(System.currentTimeMillis())).toString()
                 , Code.OK
                 , Code.NO_ERROR_MESSAGE
                 , Code.NO_MESSAGE_AVAIABLE
                 , "/skill"
                 , null);
-        Skill skills = skillService.getSkillBySkillId(skillId);
+        SkillPage skills = skillService.getSkillBySkillId(userId,skillId);
         if(skills != null){
             baseResponse.setMessage(ConstValue.QUERY_SUCCESS);
             baseResponse.setData(skills);
